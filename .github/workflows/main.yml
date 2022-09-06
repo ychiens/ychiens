@@ -1,0 +1,92 @@
+for user in user_open_ids:
+    # 获取用户信息
+    user_info = user_dict[user]
+    # 用户所在城市
+    user_city = user_info['city']
+    user_bir = user_info['birthday']
+
+    user_weather_url = weather_url + user_city
+    # 用户所在城市的天气信息
+    user_weather_text = requests.get(user_weather_url).json()
+    # 获取该用户还有多少天生日
+    diff_bir = str(getDiffDays(today, user_bir))
+    # 组装请求参数
+    req_data = {
+        'touser': user,
+        'template_id': template_id,
+        'data': {
+            'first': {
+                'value': message,
+                'color': "#f00"
+            },
+            'data1': {
+                'value': user_weather_text['date'],
+                'color': "#000"
+            },
+            'data2': {
+                'value': user_weather_text['week'],
+                'color': "#000"
+            },
+            'data3': {
+                'value': user_weather_text['tem'],
+                'color': "#FF8800"
+            },
+            'data4': {
+                'value': user_weather_text['city'],
+                'color': "#000"
+            },
+            'data5': {
+                'value': user_weather_text['wea'],
+                'color': "#000"
+            },
+            'data6': {
+                'value': user_weather_text['tem_night'],
+                'color': "#00BBFF"
+            },
+            'data7': {
+                'value': user_weather_text['tem_day'],
+                'color': "#FF0000"
+            },
+            'data8': {
+                'value': user_weather_text['win'],
+                'color': "#00AA55"
+            },
+            'data9': {
+                'value': user_weather_text['win_speed'],
+                'color': "#00AA55"
+            },
+            'data10': {
+                'value': diff_bir,
+                'color': "#FF0000"
+            },
+            'data11': {
+                'value': yiju_text['data'][random.randint(1, 10)]['content'],
+                'color': "#FF0000"
+            }
+        }
+    }
+
+    '''
+    数据转换，发送请求
+    '''
+    json_data = json.JSONEncoder().encode(req_data)
+    url = 'https://api.weixin.qq.com/cgi-bin/message/template/send?access_token=' + access_token
+    res = requests.post(url, data=json_data)
+    res_text = json.JSONDecoder().decode(res.text)
+    if res_text['errcode'] == 0:
+        print(f'用户 {user} 发送成功')
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
